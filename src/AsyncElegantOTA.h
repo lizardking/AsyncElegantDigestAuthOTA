@@ -32,23 +32,24 @@ class AsyncElegantOtaClass{
             _id = id;
         }
 
-        void begin(AsyncWebServer *server, const char* username = "", const char* password = ""){
+        void begin(AsyncWebServer *server, const char* realm , const char* authenticationHash){
+			Serial.println("AsyncElegantOTA Setup");
             _server = server;
 
-            if(strlen(username) > 0){
+            if(strlen(realm) > 0){
                 _authRequired = true;
-                _username = username;
-                _password = password;
+				_realm=realm;
+				memcpy(_authHash, authenticationHash, 257);
             }else{
                 _authRequired = false;
-                _username = "";
-                _password = "";
+				_realm="";
+				_authHash[0]=0;
             }
 
             _server->on("/update/identity", HTTP_GET, [&](AsyncWebServerRequest *request){
                 if(_authRequired){
-                    if(!request->authenticate(_username.c_str(), _password.c_str())){
-                        return request->requestAuthentication();
+                    if(!request->authenticate(_authHash)){
+                        return request->requestAuthentication(_realm,true);
                     }
                 }
                 #if defined(ESP8266)
@@ -60,8 +61,8 @@ class AsyncElegantOtaClass{
 
             _server->on("/update", HTTP_GET, [&](AsyncWebServerRequest *request){
                 if(_authRequired){
-                    if(!request->authenticate(_username.c_str(), _password.c_str())){
-                        return request->requestAuthentication();
+                    if(!request->authenticate(_authHash)){
+                        return request->requestAuthentication(_realm,true);
                     }
                 }
                 AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", ELEGANT_HTML, ELEGANT_HTML_SIZE);
@@ -71,8 +72,8 @@ class AsyncElegantOtaClass{
 
             _server->on("/update", HTTP_POST, [&](AsyncWebServerRequest *request) {
                 if(_authRequired){
-                    if(!request->authenticate(_username.c_str(), _password.c_str())){
-                        return request->requestAuthentication();
+                    if(!request->authenticate(_authHash)){
+                        return request->requestAuthentication(_realm,true);
                     }
                 }
                 // the request handler is triggered after the upload has finished... 
@@ -81,12 +82,13 @@ class AsyncElegantOtaClass{
                 response->addHeader("Connection", "close");
                 response->addHeader("Access-Control-Allow-Origin", "*");
                 request->send(response);
+				Serial.println("Requesting restart");
                 restartRequired = true;
             }, [&](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
                 //Upload handler chunks in data
                 if(_authRequired){
-                    if(!request->authenticate(_username.c_str(), _password.c_str())){
-                        return request->requestAuthentication();
+                    if(!request->authenticate(_authHash)){
+                        return request->requestAuthentication(_realm,true);
                     }
                 }
 
@@ -134,15 +136,17 @@ class AsyncElegantOtaClass{
 
         void loop(){
             if(restartRequired){
+						Serial.println("Restarting");
                 yield();
                 delay(1000);
                 yield();
                 #if defined(ESP8266)
                     ESP.restart();
                 #elif defined(ESP32)
+					ESP.restart();
                     // ESP32 will commit sucide
-                    esp_task_wdt_init(1,true);
-                    esp_task_wdt_add(NULL);
+                    // esp_task_wdt_init(1,true);
+                    // esp_task_wdt_add(NULL);
                     while(true);
                 #endif
             }
@@ -163,8 +167,8 @@ class AsyncElegantOtaClass{
         }
 
         String _id = getID();
-        String _username = "";
-        String _password = "";
+		const char * _realm = "";
+        char _authHash[257]="";	
         bool _authRequired = false;
         bool restartRequired = false;
 
