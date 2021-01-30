@@ -33,7 +33,7 @@ class AsyncElegantOtaClass{
         }
 
         void begin(AsyncWebServer *server, const char* realm , const char* authenticationHash){
-			Serial.println("AsyncElegantOTA Setup");
+			
             _server = server;
 
             if(strlen(realm) > 0){
@@ -82,7 +82,7 @@ class AsyncElegantOtaClass{
                 response->addHeader("Connection", "close");
                 response->addHeader("Access-Control-Allow-Origin", "*");
                 request->send(response);
-				Serial.println("Requesting restart");
+
                 restartRequired = true;
             }, [&](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
                 //Upload handler chunks in data
@@ -136,7 +136,7 @@ class AsyncElegantOtaClass{
 
         void loop(){
             if(restartRequired){
-						Serial.println("Restarting");
+						
                 yield();
                 delay(1000);
                 yield();
