@@ -1,8 +1,8 @@
-<p align="center"><img src="/docs/logo.svg?sanitize=true&raw=true" width="400"></p>
+<p align="center"> <b>Fork of</b><br/><img src="/docs/logo.svg?sanitize=true&raw=true" width="400"></p>
 
 <hr/>
 <p align="center">
- <b>Fork of</b><br/>
+
 <img src="https://img.shields.io/github/last-commit/ayushsharma82/AsyncElegantOTA.svg?style=for-the-badge" />
 &nbsp;
 <img src="https://img.shields.io/travis/com/ayushsharma82/AsyncElegantOTA/master?style=for-the-badge" />
