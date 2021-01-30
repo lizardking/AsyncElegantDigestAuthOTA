@@ -3,20 +3,18 @@
 <hr/>
 <p align="center">
 
-<img src="https://img.shields.io/github/last-commit/ayushsharma82/AsyncElegantOTA.svg?style=for-the-badge" />
+<img src="https://img.shields.io/github/last-commit/lizardking/AsyncElegantOTA.svg?style=for-the-badge" />
 &nbsp;
-<img src="https://img.shields.io/travis/com/ayushsharma82/AsyncElegantOTA/master?style=for-the-badge" />
+<img src="https://img.shields.io/travis/com/lizardking/AsyncElegantOTA/master?style=for-the-badge" />
 &nbsp;
-<img src="https://img.shields.io/github/license/ayushsharma82/AsyncElegantOTA.svg?style=for-the-badge" />
-&nbsp;
-<a href="https://www.buymeacoffee.com/6QGVpSj" target="_blank"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-%245-orange?style=for-the-badge&logo=buy-me-a-coffee" /></a>
+<img src="https://img.shields.io/github/license/lizardking/AsyncElegantOTA.svg?style=for-the-badge" />
 </p>
 <hr/>
 
 
 <p align="center">Perform OTAs for ESP8266 & ESP32 Asynchronously</p>
 <p align="center">
-This is a fork of the AsyncElegantOTA library.<br/> 
+This is a fork of the AsyncElegantOTA library with added support for digest authentication.<br/> <br/>
 AsyncElegantOTA provides a beautiful interface to upload Over the Air `.bin` updates to your ESP Modules with precise status and progress displayed over UI. This Library shows the current upload progress of your OTA and once finished, it will display the status of your OTA. This Version of Library uses AsyncWebServer. Thanks to @me-no-dev for a wonderful webserver library.
 </p>
 
@@ -51,7 +49,10 @@ Download the [Repository](https://github.com/ayushsharma82/AsyncElegantOTA/archi
 
  Include AsyncElegantOTA Library `#include <AsyncElegantOTA.h>` at top of your Arduino Code.
  
- Paste this - `AsyncElegantOTA.begin(&server);`  line above your `server.begin();`
+ Paste this - `AsyncElegantOTA.begin(&server, authenticationRealm, authenticationHash);`  line above your `server.begin();`
+ The values for authenticationRealm and authenticationHash must be defined in your code resp. loaded from config data.
+ 
+ Past this -   `AsyncElegantOTA.loop();` line into the loop of your code.
  
  That's all!
  
@@ -60,98 +61,8 @@ Download the [Repository](https://github.com/ayushsharma82/AsyncElegantOTA/archi
 <br>
 <h2>Examples</h2>
  
-<h3>For ESP8266:</h3>
-
-```
-#include <ESP8266WiFi.h>
-#include <ESPAsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include <AsyncElegantOTA.h>
-
-const char* ssid = "........";
-const char* password = "........";
-
-AsyncWebServer server(80);
 
 
-void setup(void) {
-  Serial.begin(115200);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  Serial.println("");
-
-  // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", "Hi! I am ESP8266.");
-  });
-
-  AsyncElegantOTA.begin(&server);    // Start ElegantOTA
-  server.begin();
-  Serial.println("HTTP server started");
-}
-
-void loop(void) {
-  AsyncElegantOTA.loop();
-}
-
-```
-
-<br>
-<h3>For ESP32:</h3>
-
-```
-#include <WiFi.h>
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include <AsyncElegantOTA.h>
-
-const char* ssid = "........";
-const char* password = "........";
-
-AsyncWebServer server(80);
-
-
-void setup(void) {
-  Serial.begin(115200);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  Serial.println("");
-
-  // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", "Hi! I am ESP32.");
-  });
-
-  AsyncElegantOTA.begin(&server);    // Start ElegantOTA
-  server.begin();
-  Serial.println("HTTP server started");
-}
-
-void loop(void) {
-  AsyncElegantOTA.loop();
-}
-
-```
 <br>
 <br>
 
@@ -159,16 +70,11 @@ void loop(void) {
 <p>Every Contribution to this repository is highly appriciated! Don't fear to create pull requests which enhance or fix the library as ultimatly you are going to help everybody.</p>
 <p>
 If you want to donate to the author then <b>you can buy me a coffee</b>, It really helps me keep these libraries updated:
-<br/><br/>
-<a href="https://www.buymeacoffee.com/6QGVpSj" target="_blank"><img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-%245-orange?style=for-the-badge&logo=buy-me-a-coffee" /></a>
-</p>
-<br/>
-<br/>
 
 
 <h2>License</h2>
 ESP-DASH is licensed under MIT.
 <br/>
 <br/>
-<img src="https://img.shields.io/github/license/ayushsharma82/AsyncElegantOTA.svg?style=for-the-badge" />
+<img src="https://img.shields.io/github/license/lizardking/AsyncElegantOTA.svg?style=for-the-badge" />
 </div>
